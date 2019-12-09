@@ -21,9 +21,9 @@ function readFile(file, callback) {
   fileReader.readAsDataURL(file);
 }
 
-$singlePic.onchange=function(e){
+$singlePic.onchange = function(e) {
   const file = e.target.files[0];
-  readFile(file, function(file){
+  readFile(file, function(file) {
     worker.postMessage({
       file: file,
       args: ["-quality", "85"]
@@ -32,7 +32,16 @@ $singlePic.onchange=function(e){
 };
 
 worker.addEventListener("message", e => {
-  console.log(e)
+  const resList = e.data;
+  const wrapper = document.createElement("div");
+  for (let i = 0; i < resList.length; i++) {
+    const arryBuffer = resList[i].data;
+    const img = document.createElement("img");
+    img.src = arrayBufferToUrl(arryBuffer);
+    img.width = 100;
+    wrapper.appendChild(img);
+  }
+  document.body.appendChild(wrapper);
 });
 
 function arrayBufferToUrl(buffer) {
