@@ -1,13 +1,10 @@
 # 使用OpenCV在前端进行人脸检测的实践
 
-## 预览
-
-https://tidusinspira.github.io/opencv-wasm/
-
 ## 运行
 
 ```bash
-php -S 0.0.0.0:9999 或 放在nginx、apache等其他web服务器里运行
+yarn global add http-server
+http-server
 ```
 
 ## 构建过程

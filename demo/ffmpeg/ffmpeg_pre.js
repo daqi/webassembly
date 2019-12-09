@@ -1,6 +1,6 @@
 function ffmpeg_run(opts, cb) {
 
-  var Module = {};
+  Module = {};
 
   for (var i in opts) {
     Module[i] = opts[i];
