@@ -32,20 +32,16 @@ $singlePic.onchange = function(e) {
 };
 
 worker.addEventListener("message", e => {
-  const resList = e.data;
+  const uint8 = e.data;
   const wrapper = document.createElement("div");
-  for (let i = 0; i < resList.length; i++) {
-    const arryBuffer = resList[i].data;
-    const img = document.createElement("img");
-    img.src = arrayBufferToUrl(arryBuffer);
-    img.width = 100;
-    wrapper.appendChild(img);
-  }
+  const img = document.createElement("img");
+  img.src = uint8ToUrl(uint8);
+  img.width = 100;
+  wrapper.appendChild(img);
   document.body.appendChild(wrapper);
 });
 
-function arrayBufferToUrl(buffer) {
-  const bytes = new Uint8Array(buffer);
-  const blob = new Blob([bytes.buffer]);
+function uint8ToUrl(uint8) {
+  const blob = new Blob([uint8.buffer]);
   return URL.createObjectURL(blob);
 }

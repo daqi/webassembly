@@ -1,7 +1,7 @@
 function cjpeg(file, options, cb) {
   var stdout = "";
   var stderr = "";
-  var args = ["-outfile", "/output/a.jpg"];
+  var args = ["-outfile", "/output.jpg"];
   if (Array.isArray(options)) {
     args = args.concat(options);
   } else {
@@ -25,29 +25,13 @@ function cjpeg(file, options, cb) {
       stderr += text;
     },
     preRun: function() {
-      FS.createFolder("/", Module["outputDir"].slice(1), true, true);
       FS.writeFile("/input", file, { encoding: "binary" });
     },
     postRun: function() {
-      var handle = FS.analyzePath(Module["outputDir"]);
-      Module["return"] = getAllBuffers(handle);
+      Module["return"] = FS.readFile("/output.jpg");
       cb(Module["return"]);
     },
     arguments: args,
     ENVIRONMENT: "SHELL"
   };
-  function getAllBuffers(result) {
-    var buffers = [];
-    if (result && result.object && result.object.contents) {
-      for (var i in result.object.contents) {
-        if (result.object.contents.hasOwnProperty(i)) {
-          buffers.push({
-            name: i,
-            data: new Uint8Array(result.object.contents[i].contents).buffer
-          });
-        }
-      }
-    }
-    return buffers;
-  }
 
