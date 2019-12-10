@@ -1,6 +1,6 @@
 let videoWidth = 640;
-let videoHeight = 480;
-let outputCanvas = document.createElement('canvas');
+let videoHeight = 360;
+let outputCanvas = document.createElement("canvas");
 
 let cap = null;
 let faceCascade = null;
@@ -15,7 +15,7 @@ navigator.getUserMedia =
 
 function run() {
   faceCascade = new cv.CascadeClassifier();
-  faceCascade.load('face.xml');
+  faceCascade.load("face.xml");
 
   cap = new cv.VideoCapture(video);
   src = new cv.Mat(videoHeight, videoWidth, cv.CV_8UC4);
@@ -42,17 +42,21 @@ function startCamera() {
 
 function saveImage(canvas, filename) {
   var image = canvas
-    .toDataURL('image/png')
-    .replace('image/png', 'image/octet-stream');
-  let imgList = document.querySelector('#imgList');
+    .toDataURL("image/png")
+    .replace("image/png", "image/octet-stream");
+  let imgList = document.querySelector("#imgList");
   appendImage(image, imgList);
 }
 
+let number = 0;
+
 function appendImage(url, node) {
-  var image = document.createElement('img');
+  if (number >= 50) return;
+  var image = document.createElement("img");
   image.src = url;
-  image.style.width = '100px';
+  image.style.width = "50%";
   node.appendChild(image);
+  number++;
 }
 
 function detectFace() {
@@ -99,16 +103,16 @@ function detectFace() {
 var Module = {
   locateFile: function(name) {
     let files = {
-      'opencv_js.wasm': 'opencv_js.wasm'
+      "opencv_js.wasm": "opencv_js.wasm"
     };
     return files[name];
   },
   preRun: [
     () => {
       Module.FS_createPreloadedFile(
-        '/',
-        'face.xml',
-        'model/haarcascade_frontalface_default.xml',
+        "/",
+        "face.xml",
+        "model/haarcascade_frontalface_default.xml",
         true,
         false
       );

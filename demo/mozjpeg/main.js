@@ -1,47 +1,85 @@
 const worker = new Worker("worker.js");
 const $singlePic = document.querySelector("#single-pic");
+const $ori = document.querySelector("#ori");
+const $res = document.querySelector("#res");
+const $number = document.querySelector("#number");
+const $quality = document.querySelector("#quality");
 
-function dataURLtoUint8(dataurl) {
-  var arr = dataurl.split(","),
-    mime = arr[0].match(/:(.*?);/)[1],
-    bstr = atob(arr[1]),
-    n = bstr.length,
-    u8arr = new Uint8Array(n);
-  while (n--) {
-    u8arr[n] = bstr.charCodeAt(n);
-  }
-  return u8arr;
-}
-function readFile(file, callback) {
-  var fileReader = new FileReader();
-  fileReader.onload = function(readFile) {
-    var ary = dataURLtoUint8(readFile.target.result);
-    callback(ary);
-  };
-  fileReader.readAsDataURL(file);
-}
+let quality = 85;
+$number.innerHTML = "压缩质量：" + quality;
+
+$quality.addEventListener(
+  "change",
+  function(e) {
+    quality = e.target.value;
+    $number.innerHTML = "压缩质量：" + quality;
+  },
+  false
+);
+
+var before;
+var after;
 
 $singlePic.onchange = function(e) {
   const file = e.target.files[0];
-  readFile(file, function(file) {
+  file2U8Arr(file, function(u8arr) {
+    const img = document.createElement("img");
+    img.src = u8arrToUrl(u8arr);
+    img.style.width = "100%";
+    $ori.appendChild(img);
+    // console.log(u8arr)
+    before = u8arr.length;
+    console.log("原图大小:", formatSize(before));
     worker.postMessage({
-      file: file,
-      args: ["-quality", "85"]
+      file: u8arr,
+      args: ["-quality", String(quality)]
     });
   });
 };
 
 worker.addEventListener("message", e => {
-  const uint8 = e.data;
-  const wrapper = document.createElement("div");
+  const u8arr = e.data;
+  after = u8arr.length;
+  console.log("压缩之后:", formatSize(after));
+  console.log("压缩率:", tofixed2((after / before) * 100) + "%");
   const img = document.createElement("img");
-  img.src = uint8ToUrl(uint8);
-  img.width = 100;
-  wrapper.appendChild(img);
-  document.body.appendChild(wrapper);
+  img.src = u8arrToUrl(u8arr);
+  img.style.width = "100%";
+  $res.appendChild(img);
 });
 
-function uint8ToUrl(uint8) {
-  const blob = new Blob([uint8.buffer]);
+function file2U8Arr(file, callback) {
+  var fileReader = new FileReader();
+  fileReader.onload = function(readFile) {
+    const res = new Uint8Array(readFile.target.result);
+    callback(res);
+  };
+  fileReader.readAsArrayBuffer(file);
+}
+
+function u8arrToUrl(u8arr) {
+  const blob = new Blob([u8arr.buffer]);
   return URL.createObjectURL(blob);
+}
+
+function formatSize(size) {
+  size = Number(size);
+  if (Number.isNaN(size)) return ""; // Nan
+  if (size < 1024) {
+    return size + "B";
+  }
+  if (size < 1048576) {
+    return tofixed2(size / 1024) + "K";
+  }
+  if (size < 1073741824) {
+    return tofixed2(size / 1048576) + "M";
+  }
+  if (size < 1099511627776) {
+    return tofixed2(size / 1073741824) + "G";
+  }
+  return tofixed2(size / 1099511627776) + "T";
+}
+
+function tofixed2(number) {
+  return Number(Number(number).toFixed(2));
 }

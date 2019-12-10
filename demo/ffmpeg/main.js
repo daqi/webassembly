@@ -37,9 +37,9 @@ $dynamicPic.onchange = (e) => {
     files,
     arguments: [
       '-i', '/input/' + files[0].name,
-      '-ss', '00:00:02',
+      '-ss', '00:00:04',
       '-t', '3',
-      '-s', '360x640',
+      '-s', '640x640',
       '-r', '15',
       '/output/foo.gif'
     ]
@@ -53,7 +53,7 @@ worker.addEventListener('message', e => {
     const arryBuffer = resList[i].data
     const img = document.createElement('img')
     img.src = arrayBufferToUrl(arryBuffer)
-    img.width = 100
+    img.style.width = '50%'
     wrapper.appendChild(img)
   }
   document.body.appendChild(wrapper)
