@@ -4,6 +4,8 @@ const $res = document.querySelector("#res");
 const $number = document.querySelector("#number");
 const $quality = document.querySelector("#quality");
 
+const KBps = 200;
+
 let quality = 70;
 $number.innerHTML = "压缩质量：" + quality;
 
@@ -44,7 +46,6 @@ worker.addEventListener("message", e => {
   console.log("压缩率:", tofixed2((after / before) * 100) + "%");
   console.log("减小了:", tofixed2((1 - after / before) * 100) + "%");
   console.log("花费时间:", time + "ms");
-  const KBps = 200;
   const Bps = KBps * 1024;
   const beforeTime = before / Bps;
   const afterTime = after / Bps + time / 1000;
