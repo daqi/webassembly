@@ -1,11 +1,10 @@
 const worker = new Worker("worker.js");
 const $singlePic = document.querySelector("#single-pic");
-const $ori = document.querySelector("#ori");
 const $res = document.querySelector("#res");
 const $number = document.querySelector("#number");
 const $quality = document.querySelector("#quality");
 
-let quality = 85;
+let quality = 70;
 $number.innerHTML = "压缩质量：" + quality;
 
 $quality.addEventListener(
@@ -23,10 +22,8 @@ var after;
 $singlePic.onchange = function(e) {
   const file = e.target.files[0];
   file2U8Arr(file, function(u8arr) {
-    const img = document.createElement("img");
-    img.src = u8arrToUrl(u8arr);
-    img.style.width = "100%";
-    $ori.appendChild(img);
+    const url = u8arrToUrl(u8arr);
+    appendImg(url);
     // console.log(u8arr)
     before = u8arr.length;
     console.log("原图大小:", formatSize(before));
@@ -42,11 +39,16 @@ worker.addEventListener("message", e => {
   after = u8arr.length;
   console.log("压缩之后:", formatSize(after));
   console.log("压缩率:", tofixed2((after / before) * 100) + "%");
-  const img = document.createElement("img");
-  img.src = u8arrToUrl(u8arr);
-  img.style.width = "100%";
-  $res.appendChild(img);
+  const url = u8arrToUrl(u8arr);
+  appendImg(url);
 });
+
+function appendImg(url) {
+  const img = document.createElement("img");
+  img.src = url;
+  img.style.width = "50%";
+  $res.appendChild(img);
+}
 
 function file2U8Arr(file, callback) {
   var fileReader = new FileReader();
