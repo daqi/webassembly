@@ -18,6 +18,7 @@ $quality.addEventListener(
 
 var before;
 var after;
+var start;
 
 $singlePic.onchange = function(e) {
   const file = e.target.files[0];
@@ -27,6 +28,7 @@ $singlePic.onchange = function(e) {
     // console.log(u8arr)
     before = u8arr.length;
     console.log("原图大小:", formatSize(before));
+    start = +new Date();
     worker.postMessage({
       file: u8arr,
       args: ["-quality", String(quality)]
@@ -37,8 +39,20 @@ $singlePic.onchange = function(e) {
 worker.addEventListener("message", e => {
   const u8arr = e.data;
   after = u8arr.length;
+  const time = new Date() - start;
   console.log("压缩之后:", formatSize(after));
   console.log("压缩率:", tofixed2((after / before) * 100) + "%");
+  console.log("减小了:", tofixed2((1 - after / before) * 100) + "%");
+  console.log("花费时间:", time + "ms");
+  const KBps = 200;
+  const Bps = KBps * 1024;
+  const beforeTime = before / Bps;
+  const afterTime = after / Bps + time / 1000;
+  console.log("如果上行带宽为", KBps + "KB/s");
+  console.log("上传原图大约需要", tofixed2(beforeTime) + "s");
+  console.log("压缩并上传大约需要", tofixed2(afterTime) + "s");
+  console.log("节省了大约", tofixed2(beforeTime - afterTime) + "s");
+  console.log("效率提高了", tofixed2((1 - afterTime / beforeTime) * 100) + "%");
   const url = u8arrToUrl(u8arr);
   appendImg(url);
 });
