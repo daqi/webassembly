@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "*.coffe": "coffeescript",
+        "*.t": "typescript",
+        "*.j": "javascript",
+        "*.ts": "typescriptreact",
+        "*.ttml": "xml",
+        "*.ttss": "css"
+    }
+}
